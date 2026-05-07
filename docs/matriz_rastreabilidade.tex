@@ -1,7 +1,7 @@
 % =============================================================
 % Matriz de Rastreabilidade de Testes — Sprint 1
 % GreenHerb API  |  Engenharia de Software II
-% Compilar com: pdflatex matriz_rastreabilidade.tex
+% Compilar com: pdflatex matriz_rastreabilidade.tex  (2×)
 % =============================================================
 \documentclass[a4paper,11pt]{article}
 
@@ -12,7 +12,7 @@
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
-\usepackage[table, dvipsnames]{xcolor}
+\usepackage[table,dvipsnames]{xcolor}
 \usepackage{pdflscape}
 \usepackage{hyperref}
 \usepackage{parskip}
@@ -27,27 +27,27 @@
 \definecolor{rowalt}{RGB}{235,241,250}
 \definecolor{grouprow}{RGB}{217,225,242}
 \definecolor{titlecolor}{RGB}{31,73,125}
+\definecolor{invalida}{RGB}{255,235,238}
+\definecolor{valida}{RGB}{232,245,233}
 
 % ------------------------------------------------------------------
-% Formatação de secções
+% Secções
 % ------------------------------------------------------------------
-\titleformat{\section}{\large\bfseries\color{titlecolor}}{}{0em}{}[\color{headerblue}\titlerule]
+\titleformat{\section}{\large\bfseries\color{titlecolor}}{}{0em}{}%
+  [\color{headerblue}\titlerule]
 \titleformat{\subsection}{\normalsize\bfseries\color{titlecolor}}{}{0em}{}
 
 % ------------------------------------------------------------------
-% Novos tipos de coluna (já com \footnotesize)
+% Tipos de coluna (já com \footnotesize e quebra de linha automática)
 % ------------------------------------------------------------------
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash\footnotesize}p{#1}}
 \newcolumntype{C}[1]{>{\centering\arraybackslash\footnotesize}p{#1}}
 
-% ------------------------------------------------------------------
-% Espaçamento das células
-% ------------------------------------------------------------------
-\setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{1.35}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.4}
 
 % ------------------------------------------------------------------
-% Cabeçalho de página
+% Cabeçalho / rodapé
 % ------------------------------------------------------------------
 \pagestyle{fancy}
 \fancyhf{}
@@ -57,10 +57,10 @@
 \renewcommand{\headrulewidth}{0.4pt}
 
 \hypersetup{
-  colorlinks = true,
-  linkcolor  = headerblue,
-  urlcolor   = headerblue,
-  pdftitle   = {Matriz de Rastreabilidade — Sprint 1},
+  colorlinks=true,
+  linkcolor=headerblue,
+  urlcolor=headerblue,
+  pdftitle={Matriz de Rastreabilidade — Sprint 1},
 }
 
 % =============================================================
@@ -73,14 +73,14 @@
 \begin{center}
   {\LARGE\bfseries\color{titlecolor} GreenHerb API}\\[6pt]
   {\large\bfseries Matriz de Rastreabilidade de Testes}\\[4pt]
-  {\normalsize Sprint 1 — Módulo de Autenticação}\\[10pt]
+  {\normalsize Sprint 1 — Módulo de Autenticação}\\[12pt]
   \begin{tabular}{@{}ll@{}}
-    \textbf{UC:}    & Engenharia de Software II — Testes de Software \\[2pt]
-    \textbf{Data:}  & 2026-05-07 \\
+    \textbf{UC:}   & Engenharia de Software II — Testes de Software \\[3pt]
+    \textbf{Data:} & 2026-05-07 \\
   \end{tabular}
 \end{center}
 
-\vspace{0.5cm}
+\vspace{0.4cm}
 \tableofcontents
 \newpage
 
@@ -93,13 +93,13 @@
   \textbf{Prefixo} & \textbf{Nível de Teste} \\
   \midrule
   \rowcolor{rowalt} TU & Teste de Unidade \\
-  TI & Teste de Integração \\
+                    TI & Teste de Integração \\
   \rowcolor{rowalt} TS & Teste de Sistema \\
   \bottomrule
 \end{tabular}
 
 % =============================================================
-\section{Requisitos Funcionais de Referência}
+\section{Requisito Funcional de Referência}
 % =============================================================
 
 \begin{tabular}{@{}C{1.4cm}L{13cm}@{}}
@@ -107,38 +107,54 @@
   \textbf{ID} & \textbf{Descrição} \\
   \midrule
   \rowcolor{rowalt}
-  RF-01 & O sistema deve autenticar utilizadores com \texttt{username} e \texttt{password},
-          devolvendo tokens JWT. \\
-  RF-02 & O sistema deve gerar um \textit{access token} JWT com payload \texttt{\{id, perfil\}}
-          e expiração de 2\,h. \\
-  \rowcolor{rowalt}
-  RF-03 & O sistema deve gerar um \textit{refresh token} JWT com payload \texttt{\{id, perfil\}}
-          e expiração de 7\,d. \\
-  RF-04 & O sistema deve renovar o \textit{access token} a partir de um \textit{refresh token} válido. \\
-  \rowcolor{rowalt}
-  RF-05 & O sistema deve verificar a validade e integridade de um token JWT. \\
-  RF-06 & O sistema deve controlar o acesso por perfil
-          (\texttt{Técnico}, \texttt{Responsável}, \texttt{Administrador}). \\
+  RF-01 & O sistema deve autenticar utilizadores com \texttt{username} e
+          \texttt{password} válidos, devolvendo um \textit{access token} e um
+          \textit{refresh token} JWT. Credenciais ausentes ou incorrectas devem
+          ser rejeitadas. \\
   \bottomrule
 \end{tabular}
 
 % =============================================================
-\section{Itens de Teste}
+\section{Particionamento de Equivalência}
 % =============================================================
 
-\begin{tabular}{@{}C{1.2cm}L{4cm}C{2.5cm}L{3cm}L{5cm}@{}}
+Esta secção define as classes de equivalência identificadas para os dois
+parâmetros de entrada da função de autenticação
+(\texttt{login(username, password, findUser)}).
+
+\subsection{Partições para \texttt{username}}
+
+\begin{tabular}{@{}C{1.4cm}C{2.2cm}L{5cm}L{4.5cm}@{}}
   \toprule
-  \textbf{ID} & \textbf{Função} & \textbf{Req.} & \textbf{Técnicas} & \textbf{Ficheiro} \\
+  \textbf{ID} & \textbf{Classe} & \textbf{Condição} & \textbf{Representante(s)} \\
   \midrule
-  \rowcolor{rowalt}
-  TI-01 & \texttt{generateAccessToken}  & RF-02            & PE + CM & \texttt{src/services/authService.js} \\
-  TI-02 & \texttt{generateRefreshToken} & RF-03            & PE + CM & \texttt{src/services/authService.js} \\
-  \rowcolor{rowalt}
-  TI-03 & \texttt{verifyToken}          & RF-05            & PE      & \texttt{src/services/authService.js} \\
-  TI-04 & \texttt{renewAccessToken}     & RF-04            & PE      & \texttt{src/services/authService.js} \\
-  \rowcolor{rowalt}
-  TI-05 & \texttt{login}                & RF-01, RF-02, RF-03 & PE + CM & \texttt{src/services/authService.js} \\
-  TI-06 & \texttt{hasProfile}           & RF-06            & PE + CM & \texttt{src/services/authService.js} \\
+  \rowcolor{invalida}
+  P-U1 & Inválida & Valor ausente: \texttt{null}, \texttt{undefined} ou string vazia
+       & \texttt{null} ; \texttt{""} \\
+  \rowcolor{invalida}
+  P-U2 & Inválida & String não vazia mas sem utilizador correspondente na BD
+       & \texttt{"desconhecido"} \\
+  \rowcolor{valida}
+  P-U3 & Válida   & Utilizador existente na BD
+       & \texttt{"alice"} \\
+  \bottomrule
+\end{tabular}
+
+\subsection{Partições para \texttt{password}}
+
+\begin{tabular}{@{}C{1.4cm}C{2.2cm}L{5cm}L{4.5cm}@{}}
+  \toprule
+  \textbf{ID} & \textbf{Classe} & \textbf{Condição} & \textbf{Representante(s)} \\
+  \midrule
+  \rowcolor{invalida}
+  P-P1 & Inválida & Valor ausente: \texttt{null}, \texttt{undefined} ou string vazia
+       & \texttt{null} ; \texttt{""} \\
+  \rowcolor{invalida}
+  P-P2 & Inválida & String fornecida que não corresponde ao \textit{hash} armazenado
+       & \texttt{"errada"} \\
+  \rowcolor{valida}
+  P-P3 & Válida   & Password correcta para o utilizador
+       & \texttt{"senha123"} \\
   \bottomrule
 \end{tabular}
 
@@ -146,382 +162,163 @@
 \section{Matriz de Rastreabilidade}
 % =============================================================
 
-% Larguras calculadas para página A4 em landscape com margens de 2,5 cm:
-%   largura disponível ≈ 247 mm = 24,7 cm
-%   soma das colunas: 0,9+1,1+3,2+1,4+3,8+5,8+5,8 = 22,0 cm
-%   espaço de separação (6 gaps × 3pt × 2 = 36pt ≈ 1,27 cm)
-%   total ≈ 23,27 cm < 24,7 cm  ✓
+% Larguras (landscape A4 com margens 2,5 cm ≈ 24,7 cm disponíveis):
+%   0,9 + 1,1 + 1,0 + 1,0 + 3,0 + 4,5 + 5,5 + 5,5 = 22,5 cm
+%   separadores: 7 × 8pt ≈ 2,0 cm  →  total ≈ 24,5 cm  ✓
 
 \begin{landscape}
-\setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{1.4}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.5}
 
 \begin{longtable}{
   C{0.9cm}   % ID CT
   C{1.1cm}   % Requisito
-  L{3.2cm}   % Endpoint(s)
-  C{1.4cm}   % Nível
-  L{3.8cm}   % Técnica
-  L{5.8cm}   % Resultado Esperado
-  L{5.8cm}   % Pré-condições
+  C{1.0cm}   % Part. username
+  C{1.0cm}   % Part. password
+  L{3.0cm}   % Endpoint
+  L{4.5cm}   % Técnica
+  L{5.5cm}   % Resultado Esperado
+  L{5.5cm}   % Pré-condições
 }
 
-\caption{Casos de Teste — Sprint~1 (Módulo de Autenticação)}
+\caption{Casos de Teste — Sprint~1, função \texttt{login} (Particionamento de Equivalência)}
 \label{tab:matriz}\\
 
-% Cabeçalho — primeira página
+% --- Cabeçalho primeira página ---
 \toprule
 \textbf{\footnotesize ID CT} &
 \textbf{\footnotesize Req.} &
-\textbf{\footnotesize Endpoint(s) Exercitado(s)} &
-\textbf{\footnotesize Nível} &
+\textbf{\footnotesize Part. \textit{user}} &
+\textbf{\footnotesize Part. \textit{pass}} &
+\textbf{\footnotesize Endpoint Exercitado} &
 \textbf{\footnotesize Técnica Aplicada} &
 \textbf{\footnotesize Resultado Esperado} &
 \textbf{\footnotesize Pré-condições} \\
 \midrule
 \endfirsthead
 
-% Cabeçalho — páginas seguintes
-\multicolumn{7}{l}{\footnotesize\textit{(continuação da Tabela~\ref{tab:matriz})}}\\[3pt]
+% --- Cabeçalho páginas seguintes ---
+\multicolumn{8}{l}{\footnotesize\textit{(continuação da Tabela~\ref{tab:matriz})}}\\[3pt]
 \toprule
 \textbf{\footnotesize ID CT} &
 \textbf{\footnotesize Req.} &
-\textbf{\footnotesize Endpoint(s) Exercitado(s)} &
-\textbf{\footnotesize Nível} &
+\textbf{\footnotesize Part. \textit{user}} &
+\textbf{\footnotesize Part. \textit{pass}} &
+\textbf{\footnotesize Endpoint Exercitado} &
 \textbf{\footnotesize Técnica Aplicada} &
 \textbf{\footnotesize Resultado Esperado} &
 \textbf{\footnotesize Pré-condições} \\
 \midrule
 \endhead
 
-% Rodapé intermédio
 \midrule
-\multicolumn{7}{r}{\footnotesize\textit{continua na página seguinte}}\\
+\multicolumn{8}{r}{\footnotesize\textit{continua na página seguinte}}\\
 \endfoot
 
-% Rodapé final
 \bottomrule
 \endlastfoot
 
-% ==============================================================
-% TI-01  —  generateAccessToken
-% ==============================================================
-\rowcolor{grouprow}
-\multicolumn{7}{l}{%
-  \footnotesize\textbf{TI-01 — \texttt{generateAccessToken(userId, perfil)}}
-  \quad Condição analisada: \texttt{!userId || !perfil}}\\
-\midrule
-
-\rowcolor{white}
-TU-01 & RF-02 &
-\texttt{POST /auth/login} (indirecto) &
-Unidade &
-CM\,—\,cond.\,(T$|$T) &
-Lança \texttt{Error}: \textit{"userId and perfil are required"} &
-\texttt{JWT\_SECRET} definido em \texttt{process.env}; sem dependência de BD \\
-
-\rowcolor{rowalt}
-TU-02 & RF-02 &
-\texttt{POST /auth/login} (indirecto) &
-Unidade &
-CM\,—\,cond.\,(T$|$F) &
-Lança \texttt{Error}: \textit{"userId and perfil are required"} &
-Idem \\
-
-\rowcolor{white}
-TU-03 & RF-02 &
-\texttt{POST /auth/login} (indirecto) &
-Unidade &
-CM\,—\,cond.\,(F$|$T) &
-Lança \texttt{Error}: \textit{"userId and perfil are required"} &
-Idem \\
-
-\rowcolor{rowalt}
-TU-04 & RF-02 &
-\texttt{POST /auth/login} (indirecto) &
-Unidade &
-CM (F$|$F) + PE classe válida &
-Retorna string JWT; payload verificável contém \texttt{id} e \texttt{perfil} correctos &
-\texttt{JWT\_SECRET} definido; \texttt{userId} e \texttt{perfil} não nulos \\
-
-\midrule
-% ==============================================================
-% TI-02  —  generateRefreshToken
-% ==============================================================
-\rowcolor{grouprow}
-\multicolumn{7}{l}{%
-  \footnotesize\textbf{TI-02 — \texttt{generateRefreshToken(userId, perfil)}}
-  \quad Condição analisada: \texttt{!userId || !perfil}}\\
-\midrule
-
-\rowcolor{white}
-TU-05 & RF-03 &
-\texttt{POST /auth/login} (indirecto) &
-Unidade &
-CM\,—\,cond.\,(T$|$T) &
-Lança \texttt{Error}: \textit{"userId and perfil are required"} &
-\texttt{JWT\_REFRESH\_SECRET} definido em \texttt{process.env} \\
-
-\rowcolor{rowalt}
-TU-06 & RF-03 &
-\texttt{POST /auth/login} (indirecto) &
-Unidade &
-CM\,—\,cond.\,(T$|$F) &
-Lança \texttt{Error}: \textit{"userId and perfil are required"} &
-Idem \\
-
-\rowcolor{white}
-TU-07 & RF-03 &
-\texttt{POST /auth/login} (indirecto) &
-Unidade &
-CM\,—\,cond.\,(F$|$T) &
-Lança \texttt{Error}: \textit{"userId and perfil are required"} &
-Idem \\
-
-\rowcolor{rowalt}
-TU-08 & RF-03 &
-\texttt{POST /auth/login} (indirecto) &
-Unidade &
-CM (F$|$F) + PE classe válida &
-Retorna JWT assinado com \texttt{JWT\_REFRESH\_SECRET}; payload contém \texttt{id} e \texttt{perfil} &
-\texttt{JWT\_REFRESH\_SECRET} e \texttt{userId}/\texttt{perfil} não nulos \\
-
-\rowcolor{white}
-TU-09 & RF-03 &
-\texttt{POST /auth/login} (indirecto) &
-Unidade &
-PE — fallback de \textit{secret} &
-Retorna JWT assinado com \texttt{JWT\_SECRET} quando \texttt{JWT\_REFRESH\_SECRET} não está definido &
-\texttt{JWT\_REFRESH\_SECRET} removido temporariamente do ambiente \\
-
-\midrule
-% ==============================================================
-% TI-03  —  verifyToken
-% ==============================================================
-\rowcolor{grouprow}
-\multicolumn{7}{l}{%
-  \footnotesize\textbf{TI-03 — \texttt{verifyToken(token, secret?)}}
-  \quad Condição analisada: \texttt{!token}}\\
-\midrule
-
-\rowcolor{white}
-TU-10 & RF-05 &
-\texttt{POST /auth/refresh}; rotas protegidas &
-Unidade &
-PE — classe inválida (token nulo) &
-Lança \texttt{Error}: \textit{"Token is required"} &
-Nenhuma \\
-
-\rowcolor{rowalt}
-TU-11 & RF-05 &
-\texttt{POST /auth/refresh}; rotas protegidas &
-Unidade &
-PE — classe inválida (token adulterado) &
-Lança \texttt{JsonWebTokenError} &
-\texttt{JWT\_SECRET} definido \\
-
-\rowcolor{white}
-TU-12 & RF-05 &
-\texttt{POST /auth/refresh}; rotas protegidas &
-Unidade &
-PE — classe inválida (token expirado) &
-Lança \texttt{TokenExpiredError} &
-Token gerado com \texttt{expiresIn:\,-1} (já expirado na criação) \\
-
-\rowcolor{rowalt}
-TU-13 & RF-05 &
-\texttt{POST /auth/refresh}; rotas protegidas &
-Unidade &
-PE — classe válida &
-Retorna payload com \texttt{id} e \texttt{perfil} correctos &
-Token válido assinado com \texttt{JWT\_SECRET} \\
-
-\rowcolor{white}
-TU-14 & RF-05 &
-\texttt{POST /auth/refresh}; rotas protegidas &
-Unidade &
-PE — fallback de \textit{secret} &
-Usa \texttt{JWT\_SECRET} do ambiente quando argumento \texttt{secret} é omitido &
-Token assinado com \texttt{JWT\_SECRET}; chamada sem argumento \texttt{secret} \\
-
-\midrule
-% ==============================================================
-% TI-04  —  renewAccessToken
-% ==============================================================
-\rowcolor{grouprow}
-\multicolumn{7}{l}{%
-  \footnotesize\textbf{TI-04 — \texttt{renewAccessToken(refreshToken)}}}\\
-\midrule
-
-\rowcolor{white}
-TU-15 & RF-04 &
-\texttt{POST /auth/refresh} &
-Unidade &
-PE — classe válida &
-Retorna novo \textit{access token}; payload verificável contém \texttt{id} e \texttt{perfil} do \textit{refresh token} original &
-\textit{Refresh token} válido assinado com \texttt{JWT\_REFRESH\_SECRET} \\
-
-\rowcolor{rowalt}
-TU-16 & RF-04 &
-\texttt{POST /auth/refresh} &
-Unidade &
-PE — classe inválida &
-Propaga erro de \texttt{verifyToken} (token malformado) &
-Token inválido passado como argumento \\
-
-\rowcolor{white}
-TU-17 & RF-04 &
-\texttt{POST /auth/refresh} &
-Unidade &
-PE — fallback de \textit{secret} &
-Usa \texttt{JWT\_SECRET} quando \texttt{JWT\_REFRESH\_SECRET} ausente; novo \textit{access token} verificável &
-\texttt{JWT\_REFRESH\_SECRET} removido temporariamente; \textit{refresh token} assinado com \texttt{JWT\_SECRET} \\
-
-\midrule
-% ==============================================================
-% TI-05  —  login
-% ==============================================================
-\rowcolor{grouprow}
-\multicolumn{7}{l}{%
-  \footnotesize\textbf{TI-05 — \texttt{login(username, password, findUser)}}
-  \quad Condições analisadas: (1)~\texttt{!username || !password} \quad (2)~\texttt{!user} \quad (3)~\texttt{!valid}}\\
-\midrule
-
-\rowcolor{white}
-TU-18 & RF-01 &
-\texttt{POST /auth/login} &
-Unidade &
-CM\,—\,cond.\,1\,(T$|$T) &
+% ------------------------------------------------------------------
+% TU-01
+% ------------------------------------------------------------------
+\rowcolor{invalida}
+TU-01 & RF-01 & P-U1 & P-P3 &
+\texttt{POST /auth/login} (unidade, indirecto) &
+PE — classe inválida de \texttt{username} (\texttt{null}) &
 Lança \texttt{Error}: \textit{"Username and password are required"} &
-\texttt{JWT\_SECRET} definido; \texttt{findUser} não invocado \\
+\texttt{JWT\_SECRET} definido; \texttt{findUser} não deve ser invocado \\
 
-\rowcolor{rowalt}
-TU-19 & RF-01 &
-\texttt{POST /auth/login} &
-Unidade &
-CM\,—\,cond.\,1\,(T$|$F) &
+% ------------------------------------------------------------------
+% TU-02
+% ------------------------------------------------------------------
+\rowcolor{invalida}
+TU-02 & RF-01 & P-U1 & P-P3 &
+\texttt{POST /auth/login} (unidade, indirecto) &
+PE — classe inválida de \texttt{username} (string vazia \texttt{""}) &
 Lança \texttt{Error}: \textit{"Username and password are required"} &
 Idem \\
 
-\rowcolor{white}
-TU-20 & RF-01 &
-\texttt{POST /auth/login} &
-Unidade &
-CM\,—\,cond.\,1\,(F$|$T) &
-Lança \texttt{Error}: \textit{"Username and password are required"} &
-Idem \\
-
-\rowcolor{rowalt}
-TU-21 & RF-01 &
-\texttt{POST /auth/login} &
-Unidade &
-PE — cond.\,2 (utilizador inexistente) &
+% ------------------------------------------------------------------
+% TU-03
+% ------------------------------------------------------------------
+\rowcolor{invalida}
+TU-03 & RF-01 & P-U2 & P-P3 &
+\texttt{POST /auth/login} (unidade, indirecto) &
+PE — classe inválida de \texttt{username} (utilizador inexistente) &
 Lança \texttt{Error}: \textit{"Invalid credentials"} &
-\texttt{findUser} mockado a devolver \texttt{null} \\
+\texttt{findUser} mockado a devolver \texttt{null} para o \textit{username} fornecido \\
 
-\rowcolor{white}
-TU-22 & RF-01 &
-\texttt{POST /auth/login} &
-Unidade &
-PE — cond.\,3 (password incorrecta) &
+% ------------------------------------------------------------------
+% TU-04
+% ------------------------------------------------------------------
+\rowcolor{invalida}
+TU-04 & RF-01 & P-U3 & P-P1 &
+\texttt{POST /auth/login} (unidade, indirecto) &
+PE — classe inválida de \texttt{password} (\texttt{null}) &
+Lança \texttt{Error}: \textit{"Username and password are required"} &
+\texttt{JWT\_SECRET} definido; \texttt{findUser} não deve ser invocado \\
+
+% ------------------------------------------------------------------
+% TU-05
+% ------------------------------------------------------------------
+\rowcolor{invalida}
+TU-05 & RF-01 & P-U3 & P-P1 &
+\texttt{POST /auth/login} (unidade, indirecto) &
+PE — classe inválida de \texttt{password} (string vazia \texttt{""}) &
+Lança \texttt{Error}: \textit{"Username and password are required"} &
+Idem \\
+
+% ------------------------------------------------------------------
+% TU-06
+% ------------------------------------------------------------------
+\rowcolor{invalida}
+TU-06 & RF-01 & P-U3 & P-P2 &
+\texttt{POST /auth/login} (unidade, indirecto) &
+PE — classe inválida de \texttt{password} (incorrecta) &
 Lança \texttt{Error}: \textit{"Invalid credentials"} &
-\texttt{findUser} mockado com utilizador válido; \textit{hash} gerado em \texttt{beforeAll} com \textit{bcryptjs} (salt\,=\,10) \\
+\texttt{findUser} mockado com utilizador válido; \textit{hash} de \textit{bcryptjs} gerado em \texttt{beforeAll} (salt\,=\,10) \\
 
-\rowcolor{rowalt}
-TU-23 & RF-01, RF-02, RF-03 &
-\texttt{POST /auth/login} &
-Unidade &
-CM (F$|$F) + PE classe válida &
-Retorna \texttt{\{accessToken, refreshToken, perfil\}}; \textit{access token} verificável com \texttt{JWT\_SECRET} &
-\texttt{findUser} mockado com \texttt{\{\_id, perfil, password\}}; credenciais correctas \\
-
-\rowcolor{white}
-TU-24 & RF-01, RF-02, RF-03 &
-\texttt{POST /auth/login} &
-Unidade &
-PE — \texttt{user.id} sem \texttt{\_id} &
-Retorna tokens; payload contém o \texttt{id} numérico e \texttt{perfil = Administrador} &
-\texttt{findUser} mockado com \texttt{\{id, perfil, password\}} (sem campo \texttt{\_id}) \\
-
-\midrule
-% ==============================================================
-% TI-06  —  hasProfile
-% ==============================================================
-\rowcolor{grouprow}
-\multicolumn{7}{l}{%
-  \footnotesize\textbf{TI-06 — \texttt{hasProfile(userPerfil, allowedProfiles)}}
-  \quad Condição analisada: \texttt{!userPerfil || !allowedProfiles || !Array.isArray(allowedProfiles)}}\\
-\midrule
-
-\rowcolor{white}
-TU-25 & RF-06 &
-Rotas protegidas com \texttt{checkRole} &
-Unidade &
-CM\,—\,cond.\,(T) &
-Devolve \texttt{false} &
-Nenhuma \\
-
-\rowcolor{rowalt}
-TU-26 & RF-06 &
-Rotas protegidas com \texttt{checkRole} &
-Unidade &
-CM\,—\,cond.\,(F$|$T) &
-Devolve \texttt{false} &
-\texttt{userPerfil} não nulo; \texttt{allowedProfiles} = \texttt{null} \\
-
-\rowcolor{white}
-TU-27 & RF-06 &
-Rotas protegidas com \texttt{checkRole} &
-Unidade &
-CM\,—\,cond.\,(F$|$F$|$T) &
-Devolve \texttt{false} &
-\texttt{allowedProfiles} é \textit{string}, não \textit{array} \\
-
-\rowcolor{rowalt}
-TU-28 & RF-06 &
-Rotas protegidas com \texttt{checkRole} &
-Unidade &
-CM (F$|$F$|$F) + PE classe válida-A &
-Devolve \texttt{true} &
-\texttt{userPerfil = Técnico}; \texttt{allowedProfiles = [Técnico, Responsável]} \\
-
-\rowcolor{white}
-TU-29 & RF-06 &
-Rotas protegidas com \texttt{checkRole} &
-Unidade &
-CM (F$|$F$|$F) + PE classe válida-B &
-Devolve \texttt{false} &
-\texttt{userPerfil = Técnico}; \texttt{allowedProfiles = [Responsável, Administrador]} \\
+% ------------------------------------------------------------------
+% TU-07
+% ------------------------------------------------------------------
+\rowcolor{valida}
+TU-07 & RF-01 & P-U3 & P-P3 &
+\texttt{POST /auth/login} (unidade, indirecto) &
+PE — classe válida (\texttt{username} e \texttt{password} correctos) &
+Retorna objecto \texttt{\{accessToken, refreshToken, perfil\}}; tokens verificáveis com \texttt{JWT\_SECRET} &
+\texttt{findUser} mockado com \texttt{\{\_id, perfil, password\}} correctos; credenciais coincidem \\
 
 \end{longtable}
 \end{landscape}
 
 % =============================================================
-\section{Resumo de Cobertura}
+\section{Resultados de Execução}
 % =============================================================
 
-Resultados obtidos com \texttt{npx jest -{}-coverage} — todos os 29 casos \textbf{PASS}.
+Comando: \texttt{npx jest tests/unit/authService.test.js {-}{-}verbose}
 
 \vspace{0.4cm}
 
-\begin{tabular}{@{}L{4.5cm}C{2.2cm}C{1.6cm}C{1.6cm}C{1.8cm}C{1.6cm}C{1.6cm}@{}}
+\begin{tabular}{@{}C{1.2cm}L{9.5cm}C{1.8cm}@{}}
   \toprule
-  \textbf{Função} & \textbf{TU IDs} & \textbf{Casos} &
-  \textbf{\% Stmts} & \textbf{\% Branch} & \textbf{\% Funcs} & \textbf{\% Lines} \\
+  \textbf{ID CT} & \textbf{Descrição do teste} & \textbf{Estado} \\
   \midrule
-  \rowcolor{rowalt}
-  \texttt{generateAccessToken}  & TU-01–04 & 4  & 100\,\% & 100\,\% & 100\,\% & 100\,\% \\
-  \texttt{generateRefreshToken} & TU-05–09 & 5  & 100\,\% & 100\,\% & 100\,\% & 100\,\% \\
-  \rowcolor{rowalt}
-  \texttt{verifyToken}          & TU-10–14 & 5  & 100\,\% & 100\,\% & 100\,\% & 100\,\% \\
-  \texttt{renewAccessToken}     & TU-15–17 & 3  & 100\,\% & 100\,\% & 100\,\% & 100\,\% \\
-  \rowcolor{rowalt}
-  \texttt{login}                & TU-18–24 & 7  & 100\,\% & 100\,\% & 100\,\% & 100\,\% \\
-  \texttt{hasProfile}           & TU-25–29 & 5  & 100\,\% & 100\,\% & 100\,\% & 100\,\% \\
+  \rowcolor{invalida}
+  TU-01 & \textit{username} null (P-U1): lança erro de campo obrigatório        & PASS \\
+  \rowcolor{invalida}
+  TU-02 & \textit{username} vazio (P-U1): lança erro de campo obrigatório       & PASS \\
+  \rowcolor{invalida}
+  TU-03 & \textit{username} inexistente (P-U2): lança erro de credenciais inválidas & PASS \\
+  \rowcolor{invalida}
+  TU-04 & \textit{password} null (P-P1): lança erro de campo obrigatório        & PASS \\
+  \rowcolor{invalida}
+  TU-05 & \textit{password} vazia (P-P1): lança erro de campo obrigatório       & PASS \\
+  \rowcolor{invalida}
+  TU-06 & \textit{password} incorrecta (P-P2): lança erro de credenciais inválidas & PASS \\
+  \rowcolor{valida}
+  TU-07 & Credenciais válidas (P-U3 $\times$ P-P3): retorna tokens e perfil     & PASS \\
   \midrule
-  \rowcolor{grouprow}
-  \textbf{Total} & TU-01–29 & \textbf{29} &
-  \textbf{100\,\%} & \textbf{100\,\%} & \textbf{100\,\%} & \textbf{100\,\%} \\
+  \multicolumn{2}{@{}l}{\textbf{Total}} & \textbf{7 / 7} \\
   \bottomrule
 \end{tabular}
 
